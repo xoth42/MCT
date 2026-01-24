@@ -24,9 +24,9 @@ jobs:
         python-version: "3.11"
 
     - name: Install lint tools
-      run: uv pip install ruff
+      run: uv venv && uv pip install ruff
 
     # Only check for obvious issues, not strict formatting
     - name: Run ruff check (errors only)
-      run: ruff check mct/ tests/ --select E,F,W || true
+      run: uv run ruff check mct/ tests/ --select E,F,W || true
 
