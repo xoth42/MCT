@@ -1,0 +1,36 @@
+name: Examples
+
+on:
+  push:
+    branches: [ main, develop ]
+  pull_request:
+    branches: [ main, develop ]
+
+jobs:
+  examples:
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v4
+
+    - name: Install uv
+      uses: astral-sh/setup-uv@v2
+      with:
+        enable-cache: true
+
+    - name: Set up Python
+      uses: actions/setup-python@v5
+      with:
+        python-version: "3.11"
+
+    - name: Install dependencies with uv
+      run: uv sync --dev
+
+    - name: Run Quickstart Example
+      run: uv run python examples/01_quickstart.py
+
+    - name: Run Monte Carlo Example
+      run: uv run python examples/02_monte_carlo.py
+
+    - name: Run Bell Basis Example
+      run: uv run python examples/03_bell_basis.py

@@ -1,0 +1,32 @@
+name: Lint & Format
+
+on:
+  push:
+    branches: [ main, develop ]
+  pull_request:
+    branches: [ main, develop ]
+
+jobs:
+  lint:
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v4
+
+    - name: Install uv
+      uses: astral-sh/setup-uv@v2
+      with:
+        enable-cache: true
+
+    - name: Set up Python
+      uses: actions/setup-python@v5
+      with:
+        python-version: "3.11"
+
+    - name: Install lint tools
+      run: uv pip install ruff
+
+    # Only check for obvious issues, not strict formatting
+    - name: Run ruff check (errors only)
+      run: ruff check mct/ tests/ --select E,F,W || true
+

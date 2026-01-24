@@ -1,0 +1,695 @@
+{
+	"version": "2.0.0",
+	"tasks": [
+		{
+			"label": "Run pytest",
+			"type": "shell",
+			"command": "uv run pytest tests -v"
+		},
+		{
+			"label": "Check installed packages",
+			"type": "shell",
+			"command": ".venv/bin/python -m pip list"
+		},
+		{
+			"label": "Recreate venv",
+			"type": "shell",
+			"command": "rm -rf .venv && uv sync --dev"
+		},
+		{
+			"label": "Sync with dev dependencies",
+			"type": "shell",
+			"command": "uv sync --dev"
+		},
+		{
+			"label": "Add pytest",
+			"type": "shell",
+			"command": "uv add --dev pytest"
+		},
+		{
+			"label": "Run pytest via uv",
+			"type": "shell",
+			"command": "uv run pytest tests -v"
+		},
+		{
+			"label": "Full test suite",
+			"type": "shell",
+			"command": "uv run pytest tests -v"
+		},
+		{
+			"label": "Debug failing test",
+			"type": "shell",
+			"command": "uv run pytest tests/test_markov_chain.py::TestMarkovChainPhysics::test_4state_bell_chain -vv"
+		},
+		{
+			"label": "Full test suite",
+			"type": "shell",
+			"command": "uv run pytest tests -v"
+		},
+		{
+			"label": "Test symbolic derivation",
+			"type": "shell",
+			"command": "uv run pytest tests/test_symbolic_derivation.py -v"
+		},
+		{
+			"label": "Debug Kraus test",
+			"type": "shell",
+			"command": "uv run pytest tests/test_symbolic_derivation.py::TestAmplitudeDampingKraus::test_kraus_numeric_evaluation -vv"
+		},
+		{
+			"label": "Debug stochasticity",
+			"type": "shell",
+			"command": "uv run pytest tests/test_symbolic_derivation.py::TestSingleQubitT1Derivation::test_stochasticity_symbolic -vv"
+		},
+		{
+			"label": "Test symbolic derivation",
+			"type": "shell",
+			"command": "uv run pytest tests/test_symbolic_derivation.py -v"
+		},
+		{
+			"label": "Test symbolic derivation",
+			"type": "shell",
+			"command": "uv run pytest tests/test_symbolic_derivation.py -v"
+		},
+		{
+			"label": "Debug metadata",
+			"type": "shell",
+			"command": "uv run python3 -c \"from mct.symbolic_derivation import derive_single_qubit_t1_symbolic; P, m = derive_single_qubit_t1_symbolic(); print(type(m['edge_cases']['lambda_0']))\""
+		},
+		{
+			"label": "Test symbolic derivation",
+			"type": "shell",
+			"command": "uv run pytest tests/test_symbolic_derivation.py -v"
+		},
+		{
+			"label": "Debug metadata",
+			"type": "shell",
+			"command": "uv run pytest tests/test_symbolic_derivation.py::TestSingleQubitT1Derivation::test_derive_returns_matrix_and_metadata -vv"
+		},
+		{
+			"label": "Full test suite",
+			"type": "shell",
+			"command": "uv run pytest tests/test_symbolic_derivation.py tests/test_markov_chain.py tests/test_sampling.py tests/test_noise_models.py -v --tb=line"
+		},
+		{
+			"label": "Full test suite summary",
+			"type": "shell",
+			"command": "uv run pytest tests/ -v --tb=line | tail -30"
+		},
+		{
+			"label": "Test function directly",
+			"type": "shell",
+			"command": "uv run python3 -c \"from mct.symbolic_derivation import derive_single_qubit_t1_symbolic; P, m = derive_single_qubit_t1_symbolic(); print('Success'); print(P.shape); print(m.keys())\""
+		},
+		{
+			"label": "Full test suite",
+			"type": "shell",
+			"command": "uv run pytest tests/ -v"
+		},
+		{
+			"label": "Full test suite",
+			"type": "shell",
+			"command": "uv run pytest tests/ -v --tb=no"
+		},
+		{
+			"label": "Test suite check",
+			"type": "shell",
+			"command": "uv run pytest tests/ -v --tb=short | head -100"
+		},
+		{
+			"label": "Check imports",
+			"type": "shell",
+			"command": "uv run python3 -c \"import MCT; print('✓ MCT imported'); print('✓ computational_basis:', len(MCT.computational_basis), 'states'); print('✓ bell_basis:', len(MCT.bell_basis), 'states'); print('✓ superoperator:', hasattr(MCT, 'superoperator')); print('✓ markov_chain:', hasattr(MCT, 'markov_chain'))\""
+		},
+		{
+			"label": "Install MCT in dev mode",
+			"type": "shell",
+			"command": "uv pip install -e ."
+		},
+		{
+			"label": "Check imports",
+			"type": "shell",
+			"command": "uv run python3 -c \"import MCT; print('✓ MCT imported'); print('✓ computational_basis:', len(MCT.computational_basis), 'states'); print('✓ bell_basis:', len(MCT.bell_basis), 'states'); print('✓ superoperator:', hasattr(MCT, 'superoperator')); print('✓ markov_chain:', hasattr(MCT, 'markov_chain'))\""
+		},
+		{
+			"label": "Check imports",
+			"type": "shell",
+			"command": "uv run python3 -c \"import mct; print('✓ mct imported'); print('✓ computational_basis:', len(mct.computational_basis), 'states'); print('✓ bell_basis:', len(mct.bell_basis), 'states'); print('✓ superoperator:', hasattr(mct, 'superoperator')); print('✓ markov_chain:', hasattr(mct, 'markov_chain'))\""
+		},
+		{
+			"label": "Final test run",
+			"type": "shell",
+			"command": "uv run pytest tests/ -v --tb=no | tail -20"
+		},
+		{
+			"label": "Run pytest",
+			"type": "shell",
+			"command": "uv run pytest tests/ -v --tb=short 2>&1 | tail -50"
+		},
+		{
+			"label": "Test API",
+			"type": "shell",
+			"command": "uv run python3 << 'PYTHON_EOF'\nimport sympy as sp\nimport mct\n\n# Define Kraus operators\nlam = sp.symbols('lambda', real=True, positive=True)\nK0 = sp.Matrix([[1, 0], [0, sp.sqrt(1 - lam)]])\nK1 = sp.Matrix([[0, sp.sqrt(lam)], [0, 0]])\n\n# Call API\nresult = mct.superoperator(\n    kraus_ops=(K0, K1),\n    basis_state=mct.computational_basis[0],\n    basis=mct.computational_basis,\n    qubits=1\n)\n\nP_symbolic, metadata = result\nprint(\"✓ superoperator() works!\")\nprint(f\"  P shape: {P_symbolic.shape}\")\nprint(f\"  Free symbols: {P_symbolic.free_symbols}\")\nprint(f\"  P(λ) = \\n{P_symbolic}\")\n\n# Generate code\ncode = mct.markov_chain(result)\nprint(f\"\\n✓ markov_chain() works!\")\nprint(f\"  Generated {len(code)} chars of Python code\")\nprint(f\"\\nGenerated function (excerpt):\\n{code[:200]}...\")\nPYTHON_EOF"
+		},
+		{
+			"label": "Quick API test",
+			"type": "shell",
+			"command": "uv run python3 -c \"import sympy as sp; import mct; lam = sp.symbols('lambda', real=True, positive=True); K0 = sp.Matrix([[1, 0], [0, sp.sqrt(1-lam)]]); K1 = sp.Matrix([[0, sp.sqrt(lam)], [0, 0]]); result = mct.superoperator((K0, K1), mct.computational_basis[0], mct.computational_basis, 1); P, m = result; print('✓ API works'); print(f'P shape: {P.shape}'); print(f'Generated code length: {len(mct.markov_chain(result))}')\""
+		},
+		{
+			"label": "API test",
+			"type": "shell",
+			"command": "uv run python3 -c \"import sympy as sp; import mct; lam = sp.symbols('lambda', real=True, positive=True); K0 = sp.Matrix([[1, 0], [0, sp.sqrt(1-lam)]]); K1 = sp.Matrix([[0, sp.sqrt(lam)], [0, 0]]); result = mct.superoperator((K0, K1), mct.computational_basis[0], mct.computational_basis, 1); P, m = result; print('✓ superoperator works'); print(f'P:\\n{P}'); code = mct.markov_chain(result); print(f'\\n✓ markov_chain works, {len(code)} chars generated')\""
+		},
+		{
+			"label": "API test",
+			"type": "shell",
+			"command": "uv run python3 -c \"import sympy as sp; import mct; lam = sp.symbols('lambda', real=True, positive=True); K0 = sp.Matrix([[1, 0], [0, sp.sqrt(1-lam)]]); K1 = sp.Matrix([[0, sp.sqrt(lam)], [0, 0]]); result = mct.superoperator((K0, K1), mct.computational_basis[0], mct.computational_basis, 1); P, m = result; print('✓ superoperator works'); print(f'P = {P.T}'); code = mct.markov_chain(result, parameter_values={'lambda': 0.5}); print(f'\\n✓ markov_chain works, {len(code)} chars')\""
+		},
+		{
+			"label": "Debug apply_channel",
+			"type": "shell",
+			"command": "uv run python3 -c \"import sympy as sp; import mct; lam = sp.symbols('lambda', real=True, positive=True); K0 = sp.Matrix([[1, 0], [0, sp.sqrt(1-lam)]]); K1 = sp.Matrix([[0, sp.sqrt(lam)], [0, 0]]); print('K0:'); print(K0); print('K1:'); print(K1); rho0 = mct.computational_basis[0]; print('rho0:'); print(rho0); from mct.main import apply_channel; rho_out = apply_channel([K0, K1], rho0); print('rho_out:'); print(rho_out)\""
+		},
+		{
+			"label": "Debug channel",
+			"type": "shell",
+			"command": "uv run python3 << 'EOF'\nimport sympy as sp\nfrom sympy import Matrix, sqrt\n\nlam = sp.symbols('lambda', real=True, positive=True)\nK0 = Matrix([[1, 0], [0, sqrt(1-lam)]])\nK1 = Matrix([[0, sqrt(lam)], [0, 0]])\nrho = Matrix([[1, 0], [0, 0]])\n\nprint(\"K0:\")\nprint(K0)\nprint(\"\\nK0.H:\")\nprint(K0.H)\nprint(\"\\nK0 @ rho @ K0.H:\")\nterm0 = K0 @ rho @ K0.H\nprint(term0)\nprint(\"\\nK1 @ rho @ K1.H:\")\nterm1 = K1 @ rho @ K1.H\nprint(term1)\nprint(\"\\nSum:\")\nrho_out = term0 + term1\nprint(rho_out)\nEOF"
+		},
+		{
+			"label": "Debug K1 multiplication",
+			"type": "shell",
+			"command": "uv run python3 << 'EOF'\nimport sympy as sp\nfrom sympy import Matrix, sqrt\n\nlam = sp.symbols('lambda', real=True, positive=True)\nK1 = Matrix([[0, sqrt(lam)], [0, 0]])\nprint(\"K1:\")\nprint(K1)\nprint(\"\\nK1.H:\")\nK1H = K1.H\nprint(K1H)\nprint(\"\\nK1 @ [[1,0],[0,0]] @ K1.H:\")\nresult = K1 @ Matrix([[1,0],[0,0]]) @ K1H\nprint(result)\nprint(\"\\nExpanded:\")\nfor i in range(2):\n    for j in range(2):\n        print(f\"({i},{j}): {result[i,j]}\")\nEOF"
+		},
+		{
+			"label": "T1 from |1>",
+			"type": "shell",
+			"command": "uv run python3 << 'EOF'\nimport sympy as sp\nfrom sympy import Matrix, sqrt\n\nlam = sp.symbols('lambda', real=True, positive=True)\nK0 = Matrix([[1, 0], [0, sqrt(1-lam)]])\nK1 = Matrix([[0, sqrt(lam)], [0, 0]])\nrho1 = Matrix([[0, 0], [0, 1]])  # |1⟩⟨1|\n\nprint(\"Starting from |1⟩⟨1|:\")\nprint(rho1)\n\nterm0 = K0 @ rho1 @ K0.H\nprint(\"\\nK0 @ rho @ K0.H:\")\nprint(term0)\nprint(\"Diag: \", [term0[i,i] for i in range(2)])\n\nterm1 = K1 @ rho1 @ K1.H  \nprint(\"\\nK1 @ rho @ K1.H:\")\nprint(term1)\nprint(\"Diag: \", [term1[i,i] for i in range(2)])\n\nrho_out = term0 + term1\nprint(\"\\nTotal rho_out:\")\nprint(rho_out)\nprint(\"\\nDiagonals (probabilities):\")\nprint(f\"P(0|1) = {rho_out[0,0]}\")\nprint(f\"P(1|1) = {rho_out[1,1]}\")\nEOF"
+		},
+		{
+			"label": "Test superoperator",
+			"type": "shell",
+			"command": "uv run python3 -c \"import sympy as sp; import mct; lam = sp.symbols('lambda', real=True, positive=True); K0 = sp.Matrix([[1, 0], [0, sp.sqrt(1-lam)]]); K1 = sp.Matrix([[0, sp.sqrt(lam)], [0, 0]]); result = mct.superoperator((K0, K1), mct.computational_basis[0], mct.computational_basis, 1); P, m = result; print('✓ superoperator works'); print(f'P:\\n{P}')\""
+		},
+		{
+			"label": "Test full pipeline",
+			"type": "shell",
+			"command": "uv run python3 -c \"import sympy as sp; import mct; lam = sp.symbols('lambda', real=True, positive=True); K0 = sp.Matrix([[1, 0], [0, sp.sqrt(1-lam)]]); K1 = sp.Matrix([[0, sp.sqrt(lam)], [0, 0]]); result = mct.superoperator((K0, K1), mct.computational_basis[0], mct.computational_basis, 1); P, m = result; print('✓ P = '); print(P); code = mct.markov_chain(result, parameter_values={'lambda': 0.5}); print('\\n✓ Generated code:'); print(code)\""
+		},
+		{
+			"label": "Run full test suite",
+			"type": "shell",
+			"command": "uv run pytest tests/ -v --tb=line 2>&1 | tail -30"
+		},
+		{
+			"label": "Setup .venv with dev dependencies",
+			"type": "shell",
+			"command": "cd /Users/zickers/Research/krastanov_lab/open-source-projects/MCT && uv sync --dev 2>&1"
+		},
+		{
+			"label": "Run full test suite",
+			"type": "shell",
+			"command": "cd /Users/zickers/Research/krastanov_lab/open-source-projects/MCT && uv run pytest tests/ -v 2>&1"
+		},
+		{
+			"label": "Sync with pytest-cov",
+			"type": "shell",
+			"command": "cd /Users/zickers/Research/krastanov_lab/open-source-projects/MCT && uv sync --dev 2>&1"
+		},
+		{
+			"label": "Coverage report",
+			"type": "shell",
+			"command": "cd /Users/zickers/Research/krastanov_lab/open-source-projects/MCT && uv run pytest tests/ --cov=mct --cov-report=term-missing 2>&1 | head -100"
+		},
+		{
+			"label": "Full coverage report",
+			"type": "shell",
+			"command": "cd /Users/zickers/Research/krastanov_lab/open-source-projects/MCT && uv run pytest tests/ --cov=mct --cov-report=term-missing 2>&1"
+		},
+		{
+			"label": "Test new additions",
+			"type": "shell",
+			"command": "cd /Users/zickers/Research/krastanov_lab/open-source-projects/MCT && uv run pytest tests/ -v 2>&1 | tail -50"
+		},
+		{
+			"label": "Check Bell stochasticity",
+			"type": "shell",
+			"command": "cd /Users/zickers/Research/krastanov_lab/open-source-projects/MCT && uv run pytest tests/test_noise_models.py::TestTwoQubitAmplitudeDampingBell::test_bell_stochasticity -v 2>&1"
+		},
+		{
+			"label": "Full noise models tests",
+			"type": "shell",
+			"command": "cd /Users/zickers/Research/krastanov_lab/open-source-projects/MCT && uv run pytest tests/test_noise_models.py -v 2>&1 | tail -60"
+		},
+		{
+			"label": "Debug ADC test",
+			"type": "shell",
+			"command": "cd /Users/zickers/Research/krastanov_lab/open-source-projects/MCT && uv run pytest tests/test_noise_models.py::TestTwoQubitADCBell::test_adc_stochasticity -v 2>&1"
+		},
+		{
+			"label": "Test noise models again",
+			"type": "shell",
+			"command": "cd /Users/zickers/Research/krastanov_lab/open-source-projects/MCT && uv run pytest tests/test_noise_models.py -v 2>&1 | tail -20"
+		},
+		{
+			"label": "Debug col sums",
+			"type": "shell",
+			"command": "cd /Users/zickers/Research/krastanov_lab/open-source-projects/MCT && uv run python3 << 'EOF'\nimport numpy as np\nfrom mct.noise_models import two_qubit_adc_bell\n\nP = two_qubit_adc_bell(λ1=0.1, λ2=0.0)\nprint(\"P for λ1=0.1, λ2=0.0:\")\nprint(P)\nprint(\"Col sums:\", np.sum(P, axis=0))\nEOF"
+		},
+		{
+			"label": "Final test run",
+			"type": "shell",
+			"command": "cd /Users/zickers/Research/krastanov_lab/open-source-projects/MCT && uv run pytest tests/ -v --tb=short 2>&1 | tail -40"
+		},
+		{
+			"label": "Final coverage report",
+			"type": "shell",
+			"command": "cd /Users/zickers/Research/krastanov_lab/open-source-projects/MCT && uv run pytest tests/ --cov=mct --cov-report=term-missing 2>&1 | grep -A 20 'Name\\|TOTAL'"
+		},
+		{
+			"label": "Test physically grounded tests",
+			"type": "shell",
+			"command": "cd /Users/zickers/Research/krastanov_lab/open-source-projects/MCT && uv run pytest tests/test_noise_models.py -v 2>&1 | tail -30"
+		},
+		{
+			"label": "Final test suite",
+			"type": "shell",
+			"command": "cd /Users/zickers/Research/krastanov_lab/open-source-projects/MCT && uv run pytest tests/ --cov=mct --cov-report=term-missing 2>&1 | tail -25"
+		},
+		{
+			"label": "Refactor Verification - Run All Tests",
+			"type": "shell",
+			"command": "uv run pytest tests/ -v 2>&1 | tail -80"
+		},
+		{
+			"label": "Refactor Verification - Run All Tests",
+			"type": "shell",
+			"command": "uv run pytest tests/ -v 2>&1 | tail -100"
+		},
+		{
+			"label": "Check symbolic derivation tests",
+			"type": "shell",
+			"command": "uv run pytest tests/test_symbolic_derivation.py -v 2>&1"
+		},
+		{
+			"label": "Final Test Run After Refactor",
+			"type": "shell",
+			"command": "uv run pytest tests/ -v --tb=short 2>&1 | tail -80"
+		},
+		{
+			"label": "Test Symbolic Derivation",
+			"type": "shell",
+			"command": "uv run pytest tests/test_symbolic_derivation.py -v 2>&1"
+		},
+		{
+			"label": "Test Symbolic Derivation Clean",
+			"type": "shell",
+			"command": "uv run pytest tests/test_symbolic_derivation.py -v 2>&1"
+		},
+		{
+			"label": "Test imports and syntax",
+			"type": "shell",
+			"command": "uv run python3 -c 'import mct; print(\"Import successful\"); mct.print_matrix_latex'"
+		},
+		{
+			"label": "Full test suite",
+			"type": "shell",
+			"command": "uv run pytest tests/ -xvs 2>&1 | tail -50"
+		},
+		{
+			"label": "Test API integration",
+			"type": "shell",
+			"command": "uv run pytest tests/test_api_integration.py -v 2>&1"
+		},
+		{
+			"label": "Test API integration full",
+			"type": "shell",
+			"command": "uv run pytest tests/test_api_integration.py -v 2>&1 | head -80"
+		},
+		{
+			"label": "Test ADC workflow",
+			"type": "shell",
+			"command": "uv run pytest tests/test_api_integration.py::TestADCWorkflowIntegration -v 2>&1"
+		},
+		{
+			"label": "Test sampling code",
+			"type": "shell",
+			"command": "uv run pytest tests/test_api_integration.py::TestSamplingCodeExecution::test_generated_code_is_executable -xvs 2>&1"
+		},
+		{
+			"label": "Test API integration",
+			"type": "shell",
+			"command": "uv run pytest tests/test_api_integration.py -v 2>&1 | tail -30"
+		},
+		{
+			"label": "Test API integration",
+			"type": "shell",
+			"command": "uv run pytest tests/test_api_integration.py -v 2>&1 | tail -30"
+		},
+		{
+			"label": "Check trajectory shape",
+			"type": "shell",
+			"command": "uv run python3 << 'EOF'\nimport mct\nimport numpy as np\nP = np.array([[0.9, 0.2], [0.1, 0.8]])\ntraj = mct.simulate_markov_vectorized(P, initial_state=0, n_steps=20, n_trajectories=10)\nprint(f\"Shape: {traj.shape}\")\nEOF"
+		},
+		{
+			"label": "Test API integration",
+			"type": "shell",
+			"command": "uv run pytest tests/test_api_integration.py -v 2>&1 | tail -40"
+		},
+		{
+			"label": "Full test suite",
+			"type": "shell",
+			"command": "uv run pytest tests/ -v 2>&1 | tail -50"
+		},
+		{
+			"label": "Test comprehensive end-to-end",
+			"type": "shell",
+			"command": "uv run pytest tests/test_api_integration.py::TestComprehensiveEndToEnd::test_full_workflow_does_everything -xvs 2>&1 | tail -50"
+		},
+		{
+			"label": "Full test suite",
+			"type": "shell",
+			"command": "uv run pytest tests/ -v 2>&1 | tail -50"
+		},
+		{
+			"label": "Full test suite",
+			"type": "shell",
+			"command": "uv run pytest tests/ -v 2>&1 | tail -40"
+		},
+		{
+			"label": "Test notebook 02 first cell",
+			"type": "shell",
+			"command": "cd /Users/zickers/Research/krastanov_lab/open-source-projects/MCT && timeout 10 uv run jupyter nbconvert --to notebook --execute --inplace notebooks/02_api_quickstart.ipynb 2>&1 | head -100",
+			"isBackground": false
+		},
+		{
+			"label": "Debug notebook 02",
+			"type": "shell",
+			"command": "cd /Users/zickers/Research/krastanov_lab/open-source-projects/MCT && uv run python3 << 'EOF'\nimport sympy as sp\nfrom sympy import Matrix, sqrt, symbols\nimport mct\nimport numpy as np\n\n# 1. Define Kraus operators\nlam = symbols('lambda', real=True, positive=True)\nK0 = Matrix([[1, 0], [0, sqrt(1 - lam)]])\nK1 = Matrix([[0, sqrt(lam)], [0, 0]])\nprint(\"✓ Defined Kraus operators\")\n\n# 2. Derive symbolic transition matrix\nprint(\"About to derive transition matrix...\")\nP, meta = mct.derive_transition_matrix([K0, K1], mct.computational_basis, \"T1\")\nprint(\"✓ Derived P\")\n\nEOF\n",
+			"isBackground": false
+		},
+		{
+			"label": "Test print_matrix_latex",
+			"type": "shell",
+			"command": "cd /Users/zickers/Research/krastanov_lab/open-source-projects/MCT && uv run python3 << 'EOF'\nimport sympy as sp\nfrom sympy import Matrix, sqrt, symbols\nimport mct\nimport numpy as np\n\nlam = symbols('lambda', real=True, positive=True)\nK0 = Matrix([[1, 0], [0, sqrt(1 - lam)]])\nK1 = Matrix([[0, sqrt(lam)], [0, 0]])\nP, meta = mct.derive_transition_matrix([K0, K1], mct.computational_basis, \"T1\")\n\nprint(\"About to print_matrix_latex...\")\nmct.print_matrix_latex(P, \"Symbolic P(λ)\")\nprint(\"Done with print_matrix_latex\")\nEOF\n",
+			"isBackground": false
+		},
+		{
+			"label": "Test notebook 02 full",
+			"type": "shell",
+			"command": "cd /Users/zickers/Research/krastanov_lab/open-source-projects/MCT && uv run python3 << 'EOF'\nimport sympy as sp\nfrom sympy import Matrix, sqrt, symbols\nimport mct\nimport numpy as np\n\nlam = symbols('lambda', real=True, positive=True)\nK0 = Matrix([[1, 0], [0, sqrt(1 - lam)]])\nK1 = Matrix([[0, sqrt(lam)], [0, 0]])\nP, meta = mct.derive_transition_matrix([K0, K1], mct.computational_basis, \"T1\")\n\nprint(\"Step 1: Derive P - done\")\nmct.print_matrix_latex(P, \"Symbolic P(λ)\")\nprint(\"Step 2: print_matrix_latex - done\")\n\nprint(\"Step 3: Substitute and verify\")\nP_num, valid = mct.substitute_and_verify(P, lam, 0.5, \"Stochastic check\")\nprint(\"Step 3 done\")\n\nprint(\"Step 4: Create MarkovChain\")\nmc = mct.MarkovChain(P_num, state_labels=['|0⟩', '|1⟩'], name='T1')\nprint(f\"MarkovChain valid: {mc.validate_stochasticity()['is_valid']}\")\n\nprint(\"Step 5: Generate sampling code\")\ncode = mct.markov_chain((P, meta), parameter_values={'lambda': 0.5})\nprint(f\"Generated {len(code)} chars of sampling code\")\nEOF\n",
+			"isBackground": false
+		},
+		{
+			"label": "Test notebook 03",
+			"type": "shell",
+			"command": "cd /Users/zickers/Research/krastanov_lab/open-source-projects/MCT && uv run python3 << 'EOF'\nimport sympy as sp\nfrom sympy import Matrix, sqrt, symbols\nimport mct\nimport numpy as np\nimport matplotlib\nmatplotlib.use('Agg')\n\nlam = symbols('lambda', real=True, positive=True)\nK0 = Matrix([[1, 0], [0, sqrt(1 - lam)]])\nK1 = Matrix([[0, sqrt(lam)], [0, 0]])\nP_sym, _ = mct.derive_transition_matrix([K0, K1], mct.computational_basis)\n\nprint(\"P_sym symbols:\", P_sym.free_symbols)\nP = np.array(P_sym.subs(lam, 0.2), dtype=float)\nprint(f\"Transition matrix P (λ=0.2):\\n{P}\")\n\nprint(\"\\nTesting distributions...\")\nn_steps = 5\nn_traj = 100000\n\nprint(\"Computing theoretical distribution...\")\ntheory_dist = mct.theoretical_distribution_after_steps(P, initial_state=1, n_steps=n_steps)\nprint(f\"Theory: {theory_dist}\")\n\nprint(\"Simulating trajectories...\")\ntrajectories = mct.simulate_markov_vectorized(P, initial_state=1, n_steps=n_steps, n_trajectories=n_traj)\nprint(f\"Trajectories shape: {trajectories.shape}\")\n\nprint(\"Computing empirical distribution...\")\nempirical_dist = mct.empirical_distribution_from_trajectories(trajectories, step=n_steps, n_states=2)\nprint(f\"Empirical: {empirical_dist}\")\n\nerror = np.linalg.norm(theory_dist - empirical_dist)\nprint(f\"L2 error: {error:.8f}\")\nEOF\n",
+			"isBackground": false
+		},
+		{
+			"label": "Debug notebook 03 errors",
+			"type": "shell",
+			"command": "cd /Users/zickers/Research/krastanov_lab/open-source-projects/MCT && uv run python3 << 'EOF' 2>&1\nimport sympy as sp\nfrom sympy import Matrix, sqrt, symbols\nimport mct\nimport numpy as np\nimport traceback\n\ntry:\n    lam = symbols('lambda', real=True, positive=True)\n    K0 = Matrix([[1, 0], [0, sqrt(1 - lam)]])\n    K1 = Matrix([[0, sqrt(lam)], [0, 0]])\n    P_sym, _ = mct.derive_transition_matrix([K0, K1], mct.computational_basis)\n    P = np.array(P_sym.subs(lam, 0.2), dtype=float)\n    \n    n_steps = 5\n    n_traj = 100000\n    \n    print(\"Computing theoretical...\")\n    theory_dist = mct.theoretical_distribution_after_steps(P, initial_state=1, n_steps=n_steps)\n    print(f\"Theory works: {theory_dist}\")\nexcept Exception as e:\n    traceback.print_exc()\n\nEOF\n",
+			"isBackground": false
+		},
+		{
+			"label": "Debug simulation",
+			"type": "shell",
+			"command": "cd /Users/zickers/Research/krastanov_lab/open-source-projects/MCT && uv run python3 << 'EOF' 2>&1\nimport sympy as sp\nfrom sympy import Matrix, sqrt, symbols\nimport mct\nimport numpy as np\nimport traceback\n\ntry:\n    lam = symbols('lambda', real=True, positive=True)\n    K0 = Matrix([[1, 0], [0, sqrt(1 - lam)]])\n    K1 = Matrix([[0, sqrt(lam)], [0, 0]])\n    P_sym, _ = mct.derive_transition_matrix([K0, K1], mct.computational_basis)\n    P = np.array(P_sym.subs(lam, 0.2), dtype=float)\n    \n    print(\"Simulating...\")\n    trajectories = mct.simulate_markov_vectorized(P, initial_state=1, n_steps=5, n_trajectories=1000)\n    print(f\"Trajectories shape: {trajectories.shape}\")\nexcept Exception as e:\n    print(f\"Error: {e}\")\n    traceback.print_exc()\n\nEOF\n",
+			"isBackground": false
+		},
+		{
+			"label": "Debug empirical distribution",
+			"type": "shell",
+			"command": "cd /Users/zickers/Research/krastanov_lab/open-source-projects/MCT && uv run python3 << 'EOF' 2>&1\nimport sympy as sp\nfrom sympy import Matrix, sqrt, symbols\nimport mct\nimport numpy as np\nimport traceback\n\ntry:\n    lam = symbols('lambda', real=True, positive=True)\n    K0 = Matrix([[1, 0], [0, sqrt(1 - lam)]])\n    K1 = Matrix([[0, sqrt(lam)], [0, 0]])\n    P_sym, _ = mct.derive_transition_matrix([K0, K1], mct.computational_basis)\n    P = np.array(P_sym.subs(lam, 0.2), dtype=float)\n    \n    trajectories = mct.simulate_markov_vectorized(P, initial_state=1, n_steps=5, n_trajectories=1000)\n    print(f\"Trajectories shape: {trajectories.shape}\")\n    print(f\"Trajectories: {trajectories}\")\n    \n    print(\"\\nEmpirical distribution...\")\n    empirical_dist = mct.empirical_distribution_from_trajectories(trajectories, step=5, n_states=2)\n    print(f\"Empirical: {empirical_dist}\")\nexcept Exception as e:\n    print(f\"Error: {e}\")\n    traceback.print_exc()\n\nEOF\n",
+			"isBackground": false
+		},
+		{
+			"label": "Test notebook 01",
+			"type": "shell",
+			"command": "cd /Users/zickers/Research/krastanov_lab/open-source-projects/MCT && uv run python3 << 'EOF' 2>&1\nimport sympy as sp\nfrom sympy import Matrix, sqrt, symbols\nimport mct\nimport numpy as np\n\nlam = symbols('lambda', real=True, positive=True)\nE0 = Matrix([[1, 0], [0, sqrt(1 - lam)]])\nE1 = Matrix([[0, sqrt(lam)], [0, 0]])\n\nprint(\"Deriving...\")\nP, metadata = mct.derive_transition_matrix(\n    [E0, E1],\n    mct.computational_basis,\n    channel_name=\"T1\"\n)\nprint(\"P derived\")\n\nmct.print_matrix_latex(P, name=\"P(λ)\")\n\nfor lam_val in [0.0, 0.1, 0.5, 0.9, 1.0]:\n    P_num, is_valid = mct.substitute_and_verify(P, lam, lam_val, name=f\"λ={lam_val}\")\n    assert is_valid, f\"Failed at λ={lam_val}\"\n\nprint(\"✓ All parameter values are stochastic\")\nEOF\n",
+			"isBackground": false
+		},
+		{
+			"label": "Install notebook dependencies",
+			"type": "shell",
+			"command": "cd /Users/zickers/Research/krastanov_lab/open-source-projects/MCT && uv add --dev matplotlib jupyter ipykernel 2>&1 | tail -20",
+			"isBackground": false
+		},
+		{
+			"label": "Test notebook workflows",
+			"type": "shell",
+			"command": "cd /Users/zickers/Research/krastanov_lab/open-source-projects/MCT && uv run pytest tests/test_notebook_workflows.py -v 2>&1",
+			"isBackground": false
+		},
+		{
+			"label": "Test notebook workflows again",
+			"type": "shell",
+			"command": "cd /Users/zickers/Research/krastanov_lab/open-source-projects/MCT && uv run pytest tests/test_notebook_workflows.py -v 2>&1",
+			"isBackground": false
+		},
+		{
+			"label": "Test decay again",
+			"type": "shell",
+			"command": "cd /Users/zickers/Research/krastanov_lab/open-source-projects/MCT && uv run pytest tests/test_notebook_workflows.py::TestNotebook03MonteCarloValidation::test_excited_state_population_decay -v 2>&1",
+			"isBackground": false
+		},
+		{
+			"label": "Test all notebook workflows",
+			"type": "shell",
+			"command": "cd /Users/zickers/Research/krastanov_lab/open-source-projects/MCT && uv run pytest tests/test_notebook_workflows.py -v 2>&1",
+			"isBackground": false
+		},
+		{
+			"label": "Full test suite",
+			"type": "shell",
+			"command": "cd /Users/zickers/Research/krastanov_lab/open-source-projects/MCT && uv run pytest tests/ -v 2>&1 | tail -60",
+			"isBackground": false
+		},
+		{
+			"label": "Full test suite final",
+			"type": "shell",
+			"command": "cd /Users/zickers/Research/krastanov_lab/open-source-projects/MCT && uv run pytest tests/ -v --tb=short 2>&1 | tail -100",
+			"isBackground": false
+		},
+		{
+			"label": "Full test suite final v2",
+			"type": "shell",
+			"command": "cd /Users/zickers/Research/krastanov_lab/open-source-projects/MCT && uv run pytest tests/ -v 2>&1 | tail -40",
+			"isBackground": false
+		},
+		{
+			"label": "Test notebook operations",
+			"type": "shell",
+			"command": "uv run python3 << 'EOF'\nimport sympy as sp\nfrom sympy import Matrix, sqrt, symbols\nimport mct\nimport numpy as np\n\n# Test notebook 01 setup\nlam = symbols('lambda', real=True, positive=True)\nK0 = Matrix([[1, 0], [0, sqrt(1 - lam)]])\nK1 = Matrix([[0, sqrt(lam)], [0, 0]])\nP, metadata = mct.derive_transition_matrix([K0, K1], mct.computational_basis, channel_name=\"T1\")\nprint(\"✓ Notebook 01: Setup works\")\n\n# Test notebook 02 workflow\nP, meta = mct.derive_transition_matrix([K0, K1], mct.computational_basis, \"T1\")\nP_num, valid = mct.substitute_and_verify(P, lam, 0.5, name=\"\")\nmc = mct.MarkovChain(P_num, state_labels=['|0⟩', '|1⟩'], name='T1')\ncode = mct.markov_chain((P, meta), parameter_values={'lambda': 0.5})\nprint(f\"✓ Notebook 02: Full workflow works ({len(code)} chars of code)\")\n\n# Test notebook 03 setup\nP_sym, _ = mct.derive_transition_matrix([K0, K1], mct.computational_basis)\nP, _ = mct.substitute_and_verify(P_sym, lam, 0.2, name=\"\")\nprint(f\"✓ Notebook 03: Setup works, P shape={P.shape}\")\n\nprint(\"\\n✓✓✓ All notebook imports and basic operations work!\")\nEOF"
+		},
+		{
+			"label": "Validate workflow YAML",
+			"type": "shell",
+			"command": "cd /Users/zickers/Research/krastanov_lab/open-source-projects/MCT && python3 -c \"import yaml; yaml.safe_load(open('.github/workflows/tests.yml')); yaml.safe_load(open('.github/workflows/lint.yml')); print('✓ Both workflows are valid YAML')\"",
+			"isBackground": false
+		},
+		{
+			"label": "Full test suite",
+			"type": "shell",
+			"command": "uv run pytest tests/ -v 2>&1 | tail -40"
+		},
+		{
+			"label": "Final test verification",
+			"type": "shell",
+			"command": "cd /Users/zickers/Research/krastanov_lab/open-source-projects/MCT && uv run pytest tests/ -v --tb=line 2>&1 | tail -50",
+			"isBackground": false
+		},
+		{
+			"label": "Check ruff linting",
+			"type": "shell",
+			"command": "cd /Users/zickers/Research/krastanov_lab/open-source-projects/MCT && uv run ruff check mct/ tests/ 2>&1 | head -20",
+			"isBackground": false
+		},
+		{
+			"label": "Add ruff to dev deps",
+			"type": "shell",
+			"command": "cd /Users/zickers/Research/krastanov_lab/open-source-projects/MCT && uv add --dev ruff 2>&1 | tail -10",
+			"isBackground": false
+		},
+		{
+			"label": "Verify all notebooks",
+			"type": "shell",
+			"command": "uv run python3 << 'EOF'\nprint(\"\\n\" + \"=\"*60)\nprint(\"NOTEBOOK VERIFICATION: Testing all three notebooks\")\nprint(\"=\"*60)\n\nimport sympy as sp\nfrom sympy import Matrix, sqrt, symbols\nimport mct\nimport numpy as np\nimport matplotlib\nmatplotlib.use('Agg')  # Non-interactive backend\nimport matplotlib.pyplot as plt\n\nprint(\"\\n[NOTEBOOK 01] Single-Qubit T1\")\nprint(\"-\" * 60)\n\n# Setup\nlam = symbols('lambda', real=True, positive=True)\nK0 = Matrix([[1, 0], [0, sqrt(1 - lam)]])\nK1 = Matrix([[0, sqrt(lam)], [0, 0]])\nprint(\"✓ Imports and setup\")\n\n# Derive\nP, metadata = mct.derive_transition_matrix([K0, K1], mct.computational_basis, channel_name=\"T1\")\nprint(f\"✓ Symbolic derivation: P shape {P.shape}\")\n\n# Verify stochasticity\nfor lam_val in [0.0, 0.1, 0.5, 0.9, 1.0]:\n    P_num, is_valid = mct.substitute_and_verify(P, lam, lam_val, name=\"\")\n    assert is_valid\nprint(\"✓ Stochasticity verification at 5 parameter values\")\n\n# Use as MarkovChain\nP_num, _ = mct.substitute_and_verify(P, lam, 0.3)\nmc = mct.MarkovChain(P_num, state_labels=['|0⟩', '|1⟩'], name='T1')\nresult = mc.validate_stochasticity()\nassert result['is_valid']\nprint(\"✓ MarkovChain creation and validation\")\n\n# Generate code\ncode = mct.markov_chain((P, metadata), parameter_values={'lambda': 0.3})\nassert len(code) > 50\nprint(f\"✓ Sampling code generation ({len(code)} chars)\")\n\nprint(\"\\n[NOTEBOOK 02] API Quickstart\")\nprint(\"-\" * 60)\n\n# Define\nlam = symbols('lambda', real=True, positive=True)\nK0 = Matrix([[1, 0], [0, sqrt(1 - lam)]])\nK1 = Matrix([[0, sqrt(lam)], [0, 0]])\nprint(\"✓ Kraus operators defined\")\n\n# Derive\nP, meta = mct.derive_transition_matrix([K0, K1], mct.computational_basis, \"T1\")\nprint(f\"✓ Symbolic matrix: {P.shape}\")\n\n# Verify\nP_num, valid = mct.substitute_and_verify(P, lam, 0.5, name=\"\")\nassert valid\nprint(\"✓ Parameter verification at λ=0.5\")\n\n# MarkovChain\nmc = mct.MarkovChain(P_num, state_labels=['|0⟩', '|1⟩'], name='T1')\nassert mc.validate_stochasticity()['is_valid']\nprint(\"✓ MarkovChain valid\")\n\n# Code\ncode = mct.markov_chain((P, meta), parameter_values={'lambda': 0.5})\nprint(f\"✓ Generated {len(code)} chars of sampling code\")\n\nprint(\"\\n[NOTEBOOK 03] Monte Carlo Validation\")\nprint(\"-\" * 60)\n\n# Setup\nlam = symbols('lambda', real=True, positive=True)\nK0 = Matrix([[1, 0], [0, sqrt(1 - lam)]])\nK1 = Matrix([[0, sqrt(lam)], [0, 0]])\nP_sym, _ = mct.derive_transition_matrix([K0, K1], mct.computational_basis)\nP, _ = mct.substitute_and_verify(P_sym, lam, 0.2, name=\"\")\nprint(f\"✓ Setup: P (λ=0.2) shape {P.shape}\")\n\n# Theory vs Empirical\nn_steps = 5\nn_traj = 10000\ntheory_dist = mct.theoretical_distribution_after_steps(P, initial_state=1, n_steps=n_steps)\ntrajectories = mct.simulate_markov_vectorized(P, initial_state=1, n_steps=n_steps, n_trajectories=n_traj)\nempirical_dist = mct.empirical_distribution_from_trajectories(trajectories, step=n_steps, n_states=2)\nerror = np.linalg.norm(theory_dist - empirical_dist)\nprint(f\"✓ Theory vs Empirical: error = {error:.6f} (n_traj={n_traj})\")\n\n# Plot (non-interactive)\nplt.figure(figsize=(6, 4))\nx = np.arange(2)\nwidth = 0.35\nplt.bar(x - width/2, theory_dist, width, label='Theoretical')\nplt.bar(x + width/2, empirical_dist, width, label='Empirical')\nplt.xlabel('State')\nplt.ylabel('Probability')\nplt.legend()\nplt.close()\nprint(f\"✓ Plot created (theoretical vs empirical)\")\n\n# Decay analysis\nn_steps_max = 10\ntrajectories_long = mct.simulate_markov_vectorized(P, initial_state=1, n_steps=n_steps_max, n_trajectories=n_traj)\ntheory_decay = np.array([mct.theoretical_distribution_after_steps(P, initial_state=1, n_steps=n)[1] \n                         for n in range(n_steps_max + 1)])\nempirical_decay = np.array([mct.empirical_distribution_from_trajectories(trajectories_long, step=n, n_states=2)[1] \n                           for n in range(n_steps_max + 1)])\nmax_error = np.linalg.norm(theory_decay - empirical_decay, np.inf)\nprint(f\"✓ Decay analysis: max error = {max_error:.6f}\")\n\nplt.figure(figsize=(10, 5))\nplt.plot(range(n_steps_max + 1), theory_decay, 'o-', label='Theoretical')\nplt.plot(range(n_steps_max + 1), empirical_decay, 's--', label='Empirical')\nplt.legend()\nplt.close()\nprint(f\"✓ Decay plot created\")\n\nprint(\"\\n\" + \"=\"*60)\nprint(\"✓✓✓ ALL NOTEBOOKS VERIFIED - NO ERRORS ✓✓✓\")\nprint(\"=\"*60 + \"\\n\")\nEOF"
+		},
+		{
+			"label": "Check ruff linting v2",
+			"type": "shell",
+			"command": "cd /Users/zickers/Research/krastanov_lab/open-source-projects/MCT && uv run ruff check mct/ tests/ 2>&1",
+			"isBackground": false
+		},
+		{
+			"label": "Auto-fix linting issues",
+			"type": "shell",
+			"command": "cd /Users/zickers/Research/krastanov_lab/open-source-projects/MCT && uv run ruff check --fix mct/ tests/ 2>&1 | tail -20",
+			"isBackground": false
+		},
+		{
+			"label": "Check remaining issues",
+			"type": "shell",
+			"command": "cd /Users/zickers/Research/krastanov_lab/open-source-projects/MCT && uv run ruff check mct/ tests/ 2>&1 | head -50",
+			"isBackground": false
+		},
+		{
+			"label": "Test after linting fixes",
+			"type": "shell",
+			"command": "cd /Users/zickers/Research/krastanov_lab/open-source-projects/MCT && uv run pytest tests/ --tb=line 2>&1 | tail -20",
+			"isBackground": false
+		},
+		{
+			"label": "See what changed",
+			"type": "shell",
+			"command": "cd /Users/zickers/Research/krastanov_lab/open-source-projects/MCT && git diff mct/ tests/ | head -100",
+			"isBackground": false
+		},
+		{
+			"label": "Revert auto-fix changes",
+			"type": "shell",
+			"command": "cd /Users/zickers/Research/krastanov_lab/open-source-projects/MCT && git checkout mct/ tests/",
+			"isBackground": false
+		},
+		{
+			"label": "Debug sampling code test",
+			"type": "shell",
+			"command": "cd /Users/zickers/Research/krastanov_lab/open-source-projects/MCT && uv run pytest tests/test_notebook_workflows.py::TestNotebook01SymbolicT1Computational::test_generate_sampling_code -xvs 2>&1 | tail -50",
+			"isBackground": false
+		},
+		{
+			"label": "Debug error details",
+			"type": "shell",
+			"command": "cd /Users/zickers/Research/krastanov_lab/open-source-projects/MCT && uv run pytest tests/test_notebook_workflows.py::TestNotebook01SymbolicT1Computational::test_generate_sampling_code -xvs 2>&1 | grep -A 30 'FAILED\\|Error\\|assert'",
+			"isBackground": false
+		},
+		{
+			"label": "Test import",
+			"type": "shell",
+			"command": "cd /Users/zickers/Research/krastanov_lab/open-source-projects/MCT && uv run python3 -c 'from mct.main import markov_chain; print(\"OK\")'",
+			"isBackground": false
+		},
+		{
+			"label": "Full test run after linting",
+			"type": "shell",
+			"command": "cd /Users/zickers/Research/krastanov_lab/open-source-projects/MCT && uv run pytest tests/ -v 2>&1 | tail -30",
+			"isBackground": false
+		},
+		{
+			"label": "Get full error",
+			"type": "shell",
+			"command": "cd /Users/zickers/Research/krastanov_lab/open-source-projects/MCT && uv run pytest tests/test_notebook_workflows.py::TestNotebook01SymbolicT1Computational::test_generate_sampling_code -xvs 2>&1",
+			"isBackground": false
+		},
+		{
+			"label": "Get full error to file",
+			"type": "shell",
+			"command": "cd /Users/zickers/Research/krastanov_lab/open-source-projects/MCT && uv run pytest tests/test_notebook_workflows.py::TestNotebook01SymbolicT1Computational::test_generate_sampling_code -xvs > /tmp/test_error.txt 2>&1 && cat /tmp/test_error.txt",
+			"isBackground": false
+		},
+		{
+			"label": "Check modified files",
+			"type": "shell",
+			"command": "cd /Users/zickers/Research/krastanov_lab/open-source-projects/MCT && git status | grep modified",
+			"isBackground": false
+		},
+		{
+			"label": "Revert mct files",
+			"type": "shell",
+			"command": "cd /Users/zickers/Research/krastanov_lab/open-source-projects/MCT && git checkout HEAD -- mct/ 2>&1",
+			"isBackground": false
+		},
+		{
+			"label": "Test markov_chain directly",
+			"type": "shell",
+			"command": "cd /Users/zickers/Research/krastanov_lab/open-source-projects/MCT && uv run python3 << 'EOF' 2>&1\nimport sympy as sp\nfrom sympy import Matrix, sqrt, symbols\nimport mct\n\nlam = symbols('lambda', real=True, positive=True)\nE0 = Matrix([[1, 0], [0, sqrt(1 - lam)]])\nE1 = Matrix([[0, sqrt(lam)], [0, 0]])\nP, metadata = mct.derive_transition_matrix([E0, E1], mct.computational_basis)\nprint(\"P derived\")\ncode = mct.markov_chain((P, metadata), parameter_values={'lambda': 0.3})\nprint(f\"Code length: {len(code)}\")\nEOF\n",
+			"isBackground": false
+		},
+		{
+			"label": "Compare main.py",
+			"type": "shell",
+			"command": "cd /Users/zickers/Research/krastanov_lab/open-source-projects/MCT && git show HEAD:mct/main.py > /tmp/main_orig.py && wc -l /tmp/main_orig.py mct/main.py",
+			"isBackground": false
+		},
+		{
+			"label": "Get error from pytest",
+			"type": "shell",
+			"command": "cd /Users/zickers/Research/krastanov_lab/open-source-projects/MCT && uv run pytest tests/ -x 2>&1 | grep -A 20 'FAILED\\|assert\\|Error' | head -40",
+			"isBackground": false
+		},
+		{
+			"label": "Debug markov_chain function",
+			"type": "shell",
+			"command": "cd /Users/zickers/Research/krastanov_lab/open-source-projects/MCT && uv run python3 << 'EOF' 2>&1\nimport sympy as sp\nfrom sympy import Matrix, sqrt, symbols\nimport mct\n\nlam = symbols('lambda', real=True, positive=True)\nK0 = Matrix([[1, 0], [0, sqrt(1 - lam)]])\nK1 = Matrix([[0, sqrt(lam)], [0, 0]])\nprint(\"Creating markov chain...\")\ntry:\n    P, metadata = mct.derive_transition_matrix([K0, K1], mct.computational_basis, \"T1\")\n    print(f\"P shape: {P.shape}\")\n    print(f\"metadata keys: {metadata.keys()}\")\n    code = mct.markov_chain((P, metadata), parameter_values={'lambda': 0.3})\n    print(f\"Code generated: {len(code)} chars\")\nexcept Exception as e:\n    print(f\"Error: {e}\")\n    import traceback\n    traceback.print_exc()\nEOF\n",
+			"isBackground": false
+		},
+		{
+			"label": "Test markov_chain import",
+			"type": "shell",
+			"command": "cd /Users/zickers/Research/krastanov_lab/open-source-projects/MCT && uv run python3 -c 'import mct; print(type(mct.markov_chain)); print(mct.markov_chain)'",
+			"isBackground": false
+		},
+		{
+			"label": "Test markov_chain import v2",
+			"type": "shell",
+			"command": "cd /Users/zickers/Research/krastanov_lab/open-source-projects/MCT && uv run python3 -c 'import mct; print(type(mct.markov_chain)); print(callable(mct.markov_chain))'",
+			"isBackground": false
+		},
+		{
+			"label": "Full test suite after fix",
+			"type": "shell",
+			"command": "cd /Users/zickers/Research/krastanov_lab/open-source-projects/MCT && uv run pytest tests/ -v 2>&1 | tail -40",
+			"isBackground": false
+		},
+		{
+			"label": "Final comprehensive test",
+			"type": "shell",
+			"command": "cd /Users/zickers/Research/krastanov_lab/open-source-projects/MCT && uv run pytest tests/ -v --tb=short 2>&1 | tail -50",
+			"isBackground": false
+		},
+		{
+			"label": "Test quickstart example",
+			"type": "shell",
+			"command": "cd /Users/zickers/Research/krastanov_lab/open-source-projects/MCT && uv run python examples/01_quickstart.py 2>&1 | tail -40",
+			"isBackground": false
+		},
+		{
+			"label": "Test monte carlo example",
+			"type": "shell",
+			"command": "cd /Users/zickers/Research/krastanov_lab/open-source-projects/MCT && uv run python examples/02_monte_carlo.py 2>&1 | tail -30",
+			"isBackground": false
+		},
+		{
+			"label": "Test bell basis example",
+			"type": "shell",
+			"command": "cd /Users/zickers/Research/krastanov_lab/open-source-projects/MCT && uv run python examples/03_bell_basis.py 2>&1 | tail -30",
+			"isBackground": false
+		},
+		{
+			"label": "Test bell basis example v2",
+			"type": "shell",
+			"command": "cd /Users/zickers/Research/krastanov_lab/open-source-projects/MCT && uv run python examples/03_bell_basis.py 2>&1 | tail -30",
+			"isBackground": false
+		},
+		{
+			"label": "Validate examples workflow",
+			"type": "shell",
+			"command": "cd /Users/zickers/Research/krastanov_lab/open-source-projects/MCT && python3 -c \"import yaml; yaml.safe_load(open('.github/workflows/examples.yml')); print('✓ Workflow YAML is valid')\"",
+			"isBackground": false
+		},
+		{
+			"label": "Final test suite",
+			"type": "shell",
+			"command": "cd /Users/zickers/Research/krastanov_lab/open-source-projects/MCT && uv run pytest tests/ -v 2>&1 | tail -30",
+			"isBackground": false
+		},
+		{
+			"label": "Quick test run",
+			"type": "shell",
+			"command": "cd /Users/zickers/Research/krastanov_lab/open-source-projects/MCT && uv run pytest tests/ -q 2>&1",
+			"isBackground": false
+		}
+	]
+}
