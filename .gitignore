@@ -205,3 +205,10 @@ cython_debug/
 marimo/_static/
 marimo/_lsp/
 __marimo__/
+
+
+tex/*
+!tex/live.notes.tex
+
+references/*
+!references/MCT_things_to_keep_in_mind.pdf

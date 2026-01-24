@@ -1,0 +1,368 @@
+\documentclass[11pt]{article}
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{geometry}
+\geometry{margin=1in}
+
+\title{MCT: Markov Chain Deriver/Generator/Tester \\ Project Specification}
+\author{}
+\date{}
+
+\begin{document}
+\maketitle
+
+====================
+\section{Core constraints / things to keep in mind}
+====================
+
+\begin{itemize}
+\item Channels, not just Kraus operators  
+\end{itemize}
+  A \textit{valid} input is a completely positive trace-preserving (CPTP) map with Kraus form  
+  
+\begin{equation}
+\rho' = \mathcal{E}(\rho) = \sum_k E_k \,\rho\, E_k^\dagger
+\end{equation}
+
+  and
+  
+\begin{equation}
+\sum_k E_k^\dagger E_k = I.
+\end{equation}
+
+  Code should either enforce or check this normalization when given $E_k$.
+
+\begin{itemize}
+\item Basis is part of the specification  
+\end{itemize}
+  You must always carry an explicit ordered basis  
+  
+\begin{equation}
+\mathcal{B} = \{\,|b_0\rangle, |b_1\rangle, \dots, |b_{d-1}\rangle \,\}
+\end{equation}
+
+  for the $d = 2^n$-dimensional Hilbert space. The Markov chain lives on these labels; changing basis changes the effective Markov dynamics.
+
+\begin{itemize}
+\item Dimensional blow-up and symbolic limits  
+\end{itemize}
+  For $n$ qubits, $\rho$ is $2^n \times 2^n$, and the superoperator is $4^n \times 4^n$.  
+  Practical rule:  
+\begin{itemize}
+\item ``Fully symbolic, many-parameter'' mode: realistically only for $n \le 2$.  
+\item Beyond that, numeric-only or \textit{very} restricted symbolic parameters.
+\end{itemize}
+
+\begin{itemize}
+\item Distinguish exact quantum evolution vs population Markov chain  
+\end{itemize}
+  Exact evolution is the channel:
+  
+\begin{equation}
+\rho_{t+1} = \mathcal{E}(\rho_t).
+\end{equation}
+
+  The \textit{classical} Markov chain is an \textit{approximate} description of populations in a chosen basis, defined by some rule such as:
+\begin{itemize}
+\item Start from basis projector $\rho_i = |b_i\rangle\langle b_i|$.
+\item Evolve: $\rho'_i = \mathcal{E}(\rho_i)$.
+\item Define transition probabilities
+\end{itemize}
+    
+\begin{equation}
+P_{ji} = \langle b_j | \rho'_i | b_j \rangle.
+\end{equation}
+
+  This gives a column-stochastic matrix $P$ when $\mathcal{E}$ is trace-preserving, but it discards coherence information by construction.
+
+\begin{itemize}
+\item Discrete step vs continuous-time generator  
+\end{itemize}
+  Decide which you are using as the \textit{primary} object:
+
+\begin{itemize}
+\item Discrete channel per time-step $\Delta t$:
+\end{itemize}
+    
+\begin{equation}
+\rho_{n+1} = \mathcal{E}_{\Delta t}(\rho_n).
+\end{equation}
+
+\begin{itemize}
+\item Continuous-time Lindbladian generator $\mathcal{L}$:
+\end{itemize}
+    
+\begin{equation}
+\frac{d\rho}{dt} = \mathcal{L}(\rho), \quad
+    \mathcal{E}_t = e^{t \mathcal{L}},
+\end{equation}
+
+    with $\mathcal{L}$ in Lindblad form
+    
+\begin{equation}
+\mathcal{L}(\rho)
+      = -\frac{i}{\hbar}[H,\rho]
+        + \sum_j \Big(
+          2 A_j \rho A_j^\dagger
+          - A_j^\dagger A_j \rho
+          - \rho A_j^\dagger A_j
+        \Big).
+\end{equation}
+
+  Make the choice explicit in the API, because it affects how you interpret $T_1$, $T_2$, and per-step probabilities.
+
+\begin{itemize}
+\item Two backends from day one  
+\item Symbolic backend (e.g.\ SymPy matrices) for small-$n$ analytic expressions.  
+\item Numeric backend (NumPy / PyTorch) for realistic system sizes and for validating the Markov approximation against full density-matrix evolution.
+\end{itemize}
+
+====================
+\section{High-level TODO list for the agents}
+====================
+
+Structure this as the module roadmap. Each bullet is a self-contained work package.
+
+\begin{enumerate}
+\item \textbf{Define core data structures}  
+\begin{itemize}
+\item A \texttt{QuantumChannel} object that stores:
+\item Kraus operators $\{E_k\}$ (symbolic or numeric matrices) in a fixed basis.  
+\item Dimension $d$ and number of qubits $n$.  
+\item Optionally, the superoperator matrix $S$ acting on vectorized density matrices:
+\end{itemize}
+       
+\begin{equation}
+|\rho'\rangle\rangle = S \,|\rho\rangle\rangle.
+\end{equation}
+
+\begin{itemize}
+\item A \texttt{Basis} object:
+\item Explicit ordered list of computational basis states for $n$ qubits (\texttt{["00...0", ...]}).
+\end{itemize}
+
+\item \textbf{Implement ``apply channel to density matrix''}  
+\begin{itemize}
+\item Core function: \texttt{rho\_out = apply\_channel(channel, rho\_in)}  
+\end{itemize}
+       computing
+       
+\begin{equation}
+\rho_{\text{out}} = \sum_k E_k \rho_{\text{in}} E_k^\dagger.
+\end{equation}
+
+\begin{itemize}
+\item Should work in both:
+\item symbolic mode (small systems, returns SymPy expressions), and  
+\item numeric mode (returns NumPy or PyTorch arrays).
+\end{itemize}
+
+\item \textbf{Implement Markov-chain extraction from a channel}  
+\begin{itemize}
+\item Function: \texttt{P = make\_markov\_from\_channel(channel, basis)}  
+\item Default rule (document this in the code!):
+\item For each basis state $|b_i\rangle$:
+\end{itemize}
+       
+\begin{equation}
+\rho_i = |b_i\rangle\langle b_i|,\quad
+       \rho'_i = \mathcal{E}(\rho_i).
+\end{equation}
+
+\begin{itemize}
+\item Define
+\end{itemize}
+       
+\begin{equation}
+P_{ji} = \langle b_j | \rho'_i | b_j \rangle.
+\end{equation}
+
+\begin{itemize}
+\item Verify in code:
+\item $P_{ji} \ge 0$ and each column sums to $1$ (within tolerance).
+\end{itemize}
+
+\item \textbf{Implement a density-matrix simulator}  
+\begin{itemize}
+\item Function for \textit{discrete} channels: \texttt{rho\_t = simulate\_density\_discrete(rho0, channel, steps)}  
+\end{itemize}
+       repeated application:
+       
+\begin{equation}
+\rho_{k+1} = \mathcal{E}(\rho_k).
+\end{equation}
+
+\begin{itemize}
+\item Optional: function for \textit{continuous-time} generator $\mathcal{L}$:
+\item either via exponentiation $\mathcal{E}_t = e^{t \mathcal{L}}$ for small systems, or numeric ODE integration of
+\end{itemize}
+       
+\begin{equation}
+\frac{d\rho}{dt} = \mathcal{L}(\rho).
+\end{equation}
+
+
+\item \textbf{Cross-check: Markov chain vs full density evolution}  
+\begin{itemize}
+\item Given $P$ and \texttt{simulate\_density\_discrete}, implement a test function:
+\item Start from each basis projector $\rho_i = |b_i\rangle\langle b_i|$.  
+\item Evolve with both:
+\item full channel (density matrix), and  
+\item Markov chain on populations.  
+\item Compare
+\end{itemize}
+       
+\begin{equation}
+\text{diag}(\rho_k) \quad\text{vs}\quad P^k \, e_i,
+\end{equation}
+
+       where $e_i$ is the $i$-th standard basis vector.  
+\begin{itemize}
+\item Use this to quantify how ``classical'' the channel looks in a given basis.
+\end{itemize}
+
+\item \textbf{Build a library of standard test channels}  
+   Implement constructors (both symbolic and numeric) for:
+
+\begin{itemize}
+\item Single-qubit amplitude damping (AD): Kraus operators
+\end{itemize}
+     
+\begin{equation}
+E_0 = \begin{pmatrix} 1 & 0 \\ 0 & \sqrt{1-\lambda} \end{pmatrix},\quad
+     E_1 = \begin{pmatrix} 0 & \sqrt{\lambda} \\ 0 & 0 \end{pmatrix}.
+\end{equation}
+
+\begin{itemize}
+\item Two-qubit amplitude damping via tensor products
+\end{itemize}
+     
+\begin{equation}
+K_0 = E_0\otimes E_0,\;
+     K_1 = E_0\otimes E_1,\;
+     K_2 = E_1\otimes E_0,\;
+     K_3 = E_1\otimes E_1.
+\end{equation}
+
+\begin{itemize}
+\item Single-qubit pure dephasing (phase damping) with Kraus operators like
+\end{itemize}
+     
+\begin{equation}
+K_0 = \sqrt{1-p}\,I,\quad K_1 = \sqrt{p}\,Z.
+\end{equation}
+
+\begin{itemize}
+\item Simple depolarizing or Pauli channels.
+\end{itemize}
+
+   These give known steady states and known $T_1$, $T_2$ relations for validation.
+
+\item \textbf{Validation and sanity checks}  
+\begin{itemize}
+\item CPTP check:
+\item Verify
+\end{itemize}
+       
+\begin{equation}
+\sum_k E_k^\dagger E_k \approx I
+\end{equation}
+
+       numerically, or exactly in symbolic mode.  
+\begin{itemize}
+\item Markov matrix check:
+\item $P_{ji} \ge 0$ and column sums $\sum_j P_{ji} = 1$.  
+\item Physics sanity:
+\item AD channel relaxes to ground state; dephasing leaves populations unchanged.  
+\item For AD with rate $\gamma = 1/T_1$, verify population decay
+\end{itemize}
+       
+\begin{equation}
+\rho_{11}(t) \sim e^{-t/T_1}
+\end{equation}
+
+       and coherence decay consistent with chosen $T_2$.
+
+\item \textbf{Document limitations explicitly}  
+\begin{itemize}
+\item State in the README/API:
+\item Maximum recommended $n$ for symbolic mode.  
+\item Default basis choice if none is supplied (e.g.\ computational).  
+\item What Markov-construction rule is used and what information is lost (coherences).
+\end{itemize}
+\end{enumerate}
+
+====================
+\section{Minimal reference set for the agents}
+====================
+
+To keep them focused, refer to the following resources with indicated page ranges:
+
+\begin{enumerate}
+\item \textbf{\texttt{qubit\_guide.pdf} -- Chapter 9 (Quantum channels)}  
+   Use this for the \textit{definitions and structure} of channels and Kraus operators.
+
+\begin{itemize}
+\item Pages 170--171: introduction to quantum channels, ``everything is secretly unitary'', and the idea that non-unitary evolution arises from unitary evolution + ancilla + partial trace.
+\item Page 177: Stinespring dilation and derivation of the operator-sum form
+\end{itemize}
+     
+\begin{equation}
+\rho \mapsto \rho' = \sum_i E_i \rho E_i^\dagger
+\end{equation}
+
+     with $\sum_i E_i^\dagger E_i = I$.
+\begin{itemize}
+\item Page 178: Kraus representation explicitly stated and discussed; good for citing the core equation and completeness relation.
+\item Page 181: composition of channels (adding ancilla, unitaries, partial trace) and the fact that each piece has its own Kraus representation; this motivates how you'll implement composition in code.
+\end{itemize}
+
+   That's enough from this book for the purposes of your project.
+
+\item \textbf{\texttt{T1 T2 noise.pdf} -- amplitude damping example}  
+   Use this as a \textit{worked example} of going from single-qubit AD Kraus operators to two-qubit Kraus operators and Bell-state behavior.
+
+\begin{itemize}
+\item Page 3: explicit AD Kraus operators
+\end{itemize}
+     
+\begin{equation}
+E_0 = \begin{pmatrix} 1 & 0 \\ 0 & \sqrt{1-\lambda} \end{pmatrix},\quad
+     E_1 = \begin{pmatrix} 0 & \sqrt{\lambda} \\ 0 & 0 \end{pmatrix},
+\end{equation}
+
+     and construction of two-qubit Kraus operators by tensor products.  
+
+   Agents can use this as a sanity-check case for their multi-qubit symbolic and numeric implementations.
+
+\item \textbf{\texttt{Manenti\_Motta-Do\_not\_share.pdf} -- Markovian master equations, $T_1$, $T_2$}  
+   Use this as the \textit{bridge} between Lindblad master equations, $T_1/T_2$, and the effective channels you are approximating.
+
+\begin{itemize}
+\item Page 300: general Markovian master equation in Lindblad form, with decay rates $\gamma_k$ and dissipators
+\end{itemize}
+     
+\begin{equation}
+\mathcal{D}[A_k](\rho) = A_k \rho A_k^\dagger - \frac{1}{2}\{A_k^\dagger A_k, \rho\},
+\end{equation}
+
+     and explicit amplitude-damping example linking $\gamma = 1/T_1$.
+\begin{itemize}
+\item Page 336: summary table including Markovian master equation, amplitude damping, and dephasing, plus the relations defining $T_1$ and $T_\phi$.
+\end{itemize}
+
+   This gives enough physics to relate your discrete-step channel parameters $(\lambda_1, \lambda_\phi)$ to continuous-time $T_1$, $T_2$.
+
+\item \textbf{Optional / back-pocket: \texttt{Quantum Noise\_ ... Gardiner \& Zoller}}  
+   Only if you want them to see the ``canonical'' Lindblad form in a more theoretical setting.
+
+\begin{itemize}
+\item Page 165: statement of the Lindblad form and discussion that it is the general generator of a quantum Markov process.
+\end{itemize}
+
+   You can mark this as ``for background only; not required for implementation.''
+\end{enumerate}
+
+If you want, the next step can be: turn this into a short, agent-facing spec document (with function names and signatures) that you can paste directly into an agentic coding session.
+
+\end{document}
