@@ -7,9 +7,11 @@ setup(
     install_requires=[
         "numpy",
         "sympy",
+        "scipy",
     ],
     extras_require={
         "dev": ["pytest", "pytest-cov", "matplotlib", "jupyter", "ipykernel", "ruff"],
+        "performance": ["numba"],  # Optional performance optimization
     },
     python_requires=">=3.9",
 )

@@ -7,13 +7,18 @@ requires-python = ">=3.11"
 dependencies = [
     "numpy",
     "sympy",
+    "scipy",
 ]
 
 [project.optional-dependencies]
 dev = [
     "pytest",
     "pytest-cov",
+    "matplotlib",
+    "jupyter",
+    "ipykernel",
 ]
+performance = ["numba"]  # Optional JIT compilation for simulation
 
 [build-system]
 requires = ["setuptools>=70", "setuptools-scm[toml]>=6.2"]
