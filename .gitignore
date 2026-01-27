@@ -212,3 +212,6 @@ tex/*
 
 references/*
 !references/MCT_things_to_keep_in_mind.pdf
+
+.vscode/*
+.vscode/*.json
