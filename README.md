@@ -5,6 +5,23 @@
 
 A Python toolkit for **deriving Markov-chain transition matrices from quantum noise models** and **generating fast sampling code** from analytic expressions.
 
+## TL;DR: Quick Commands
+
+```bash
+# Setup dev environment
+uv sync --dev
+
+# Install package (editable)
+uv pip install -e .
+
+# Run tests (unittest or pytest)
+uv run python -m unittest tests -v
+uv run pytest tests -v
+
+# Run demo notebook (choose kernel from .venv)
+uv run python -m jupyter notebook examples/Demo.ipynb
+```
+
 ## Vision
 
 MCT enables quantum researchers to:

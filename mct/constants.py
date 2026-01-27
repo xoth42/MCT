@@ -13,14 +13,10 @@ AMPLITUDE_DAMPING_KRAUS = (
     Matrix([[0, sqrt(lam)], [0, 0]])
 )
 
-# Two-qubit ADC parameters
-lam1, lam2 = symbols('lambda_1 lambda_2', real=True, positive=True)
-TWO_QUBIT_ADC_KRAUS_PARAMS = (lam1, lam2)
-
-
 # ============================================================================
 # Basis State Definitions
 # ============================================================================
+
 
 # Single qubit: {|0⟩, |1⟩}
 computational_basis = [

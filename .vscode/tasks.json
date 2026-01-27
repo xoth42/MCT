@@ -690,6 +690,192 @@
 			"type": "shell",
 			"command": "cd /Users/zickers/Research/krastanov_lab/open-source-projects/MCT && uv run pytest tests/ -q 2>&1",
 			"isBackground": false
+		},
+		{
+			"label": "Run unittest: test_derivation",
+			"type": "shell",
+			"command": "uv",
+			"args": [
+				"run",
+				"python",
+				"-m",
+				"unittest",
+				"tests.test_derivation",
+				"-v"
+			]
+		},
+		{
+			"label": "Run unittest: test_derivation (verbose)",
+			"type": "shell",
+			"command": "uv",
+			"args": [
+				"run",
+				"python",
+				"-m",
+				"unittest",
+				"-v",
+				"tests.test_derivation"
+			]
+		},
+		{
+			"label": "Run unittest: single test two_qubit",
+			"type": "shell",
+			"command": "uv",
+			"args": [
+				"run",
+				"python",
+				"-m",
+				"unittest",
+				"-v",
+				"tests.test_derivation.TestApplyChannel.test_two_qubit_amplitude_damping"
+			]
+		},
+		{
+			"label": "Run unittest: single test single_qubit",
+			"type": "shell",
+			"command": "uv",
+			"args": [
+				"run",
+				"python",
+				"-m",
+				"unittest",
+				"-v",
+				"tests.test_derivation.TestApplyChannel.test_single_qubit_amplitude_damping"
+			]
+		},
+		{
+			"label": "Run unittest: single test n_qubit_amp_damp",
+			"type": "shell",
+			"command": "uv",
+			"args": [
+				"run",
+				"python",
+				"-m",
+				"unittest",
+				"-v",
+				"tests.test_derivation.TestApplyChannel.test_n_qubit_amp_damp"
+			]
+		},
+		{
+			"label": "Run unittest: test_derivation (full)",
+			"type": "shell",
+			"command": "uv",
+			"args": [
+				"run",
+				"python",
+				"-m",
+				"unittest",
+				"tests.test_derivation",
+				"-v"
+			]
+		},
+		{
+			"label": "Quick import check for probability_symbol",
+			"type": "shell",
+			"command": "uv",
+			"args": [
+				"run",
+				"python",
+				"-c",
+				"from mct import probability_symbol, apply_channel; import sympy as sp; print(probability_symbol('lambda'))"
+			]
+		},
+		{
+			"label": "Quick import check (quoted)",
+			"type": "shell",
+			"command": "uv",
+			"args": [
+				"run",
+				"python",
+				"- <<'PY'\nfrom mct import probability_symbol, apply_channel\nl, assumptions = probability_symbol('lambda')\nprint(l)\nprint(assumptions)\nPY"
+			]
+		},
+		{
+			"label": "Quick import check (simple)",
+			"type": "shell",
+			"command": "uv",
+			"args": [
+				"run",
+				"python",
+				"-c",
+				"from mct import probability_symbol; l, a = probability_symbol('lambda'); print(l); print(a)"
+			]
+		},
+		{
+			"label": "Run unittest: test_derivation after fix",
+			"type": "shell",
+			"command": "uv",
+			"args": [
+				"run",
+				"python",
+				"-m",
+				"unittest",
+				"tests.test_derivation",
+				"-v"
+			]
+		},
+		{
+			"label": "UV sync dev deps",
+			"type": "shell",
+			"command": "uv",
+			"args": [
+				"sync",
+				"--dev"
+			]
+		},
+		{
+			"label": "UV editable install",
+			"type": "shell",
+			"command": "uv",
+			"args": [
+				"pip",
+				"install",
+				"-e",
+				"."
+			]
+		},
+		{
+			"label": "Quick import check mct",
+			"type": "shell",
+			"command": "uv",
+			"args": [
+				"run",
+				"python",
+				"-c",
+				"import mct; from mct import apply_channel, probability_symbol; print(probability_symbol('lambda'))"
+			]
+		},
+		{
+			"label": "Quick import check mct (multiline)",
+			"type": "shell",
+			"command": "uv",
+			"args": [
+				"run",
+				"python",
+				"- <<'PY'\nimport mct\nfrom mct import apply_channel, probability_symbol\nprint(probability_symbol('lambda'))\nPY"
+			]
+		},
+		{
+			"label": "Quick import check mct (simple OK)",
+			"type": "shell",
+			"command": "uv",
+			"args": [
+				"run",
+				"python",
+				"-c",
+				"import mct; import sympy as sp; l,a = mct.probability_symbol('lambda'); print(l); print(a)"
+			]
+		},
+		{
+			"label": "Quick import check mct (quote-safe)",
+			"type": "shell",
+			"command": "uv",
+			"args": [
+				"run",
+				"python",
+				"-c",
+				"import mct; import sympy as sp; l,a = mct.probability_symbol(\"lambda\"); print(l); print(a)"
+			]
 		}
 	]
 }
