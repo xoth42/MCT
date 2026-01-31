@@ -6,6 +6,9 @@ import time
 import os
 from matplotlib.collections import LineCollection
 from IPython.display import display
+import sympy as sp
+
+
 
 # Optional numba import with fallback
 try:
@@ -479,114 +482,18 @@ def _exp_fit(times, y, tail_fraction=0.5, verbose=True, bounds=None, fit_fractio
             print(f"Exponential fit encountered error - {str(e)}")
         return None
 
-def plot_markov_results(kept_trajs, pop_history, dt, fit_state=1, tail_fraction=0.25, name="", save_path=None):
-    """Combined plotting: population dynamics and excitation decay.
-    
-    Optimized for Agg backend with:
-    - LineCollection for batch trajectory rendering
-    - Aggressive downsampling
-    - Disabled anti-aliasing
-    
-    Parameters:
-    - save_path: If provided, saves the figure to this path (e.g., "plots/my_plot.png")
-    """
-    steps = pop_history.shape[0] - 1
-    times = np.arange(steps + 1) * dt
-    
-    # Aggressive downsampling for plotting
-    max_plot_points = 1000
-    if len(times) > max_plot_points:
-        stride = len(times) // max_plot_points
-        plot_times = times[::stride]
-        plot_pop = pop_history[::stride]
-        plot_trajs = kept_trajs[:, ::stride] if kept_trajs.size > 0 else kept_trajs
-    else:
-        plot_times = times
-        plot_pop = pop_history
-        plot_trajs = kept_trajs
-    
-    # Disable anti-aliasing for speed
-    # plt.rcParams['lines.antialiased'] = False
-    # plt.rcParams['patch.antialiased'] = False
-    
-    fig, (ax1, ax2) = plt.subplots(2, 1, figsize=(12, 8))
-    
-    # Use LineCollection for trajectories (MUCH faster than individual lines)
-    n_show = min(kept_trajs.shape[0], 10)
-    if n_show > 0:
-        segments = [np.column_stack([plot_times, (plot_trajs[i] == fit_state).astype(float)]) 
-                   for i in range(n_show)]
-        lc = LineCollection(segments, colors='gray', alpha=0.3, linewidths=0.5)
-        ax1.add_collection(lc)
-        ax1.autoscale()
-    
-    # Plot population dynamics
-    colors = ["#0072B2", "#E69F00", "#009E73", "#D55E00", "#CC79A7", "#F0E442", "#56B4E9", "#000000"]
-    linestyles = ["--", "-", "--", "-", (0, (1, 1)), (0, (3, 1, 1, 1)), (0, (5, 1)), (0, (5, 2, 1, 2))]
-    
-    for s in range(plot_pop.shape[1]):
-        ax1.plot(plot_times, plot_pop[:, s], color=colors[s % len(colors)],
-                linestyle=linestyles[s % len(linestyles)], linewidth=2, label=f"P({s+1})")
-    
-    # Fit exponential to selected state population (use full data for accuracy)
-    fit = _exp_fit(times, pop_history[:, fit_state - 1], tail_fraction=tail_fraction, verbose=False)
-    if fit is not None:
-        a, tau, c = fit
-        ax1.plot(plot_times, c + a * np.exp(-plot_times / tau), color="blue", linestyle=":", 
-                linewidth=2, label=f"τ={tau:.1f} μs")
-    
-    ax1.set_ylim(-0.05, 1.05)
-    ax1.set_xlabel("time (μs)")
-    ax1.set_ylabel("Population")
-    ax1.legend(loc="upper right")
-    ax1.set_title(name if name else "Markov Monte Carlo")
-    ax1.grid(False)
-    
-    # Use LineCollection for excitation decay trajectories
-    n_traj_show = min(plot_trajs.shape[0], 10)
-    if n_traj_show > 0:
-        segments2 = [np.column_stack([plot_times, plot_trajs[i]]) for i in range(n_traj_show)]
-        lc2 = LineCollection(segments2, colors='gray', alpha=0.2, linewidths=0.5)
-        ax2.add_collection(lc2)
-    
-    avg_state = sum((s + 1) * plot_pop[:, s] for s in range(plot_pop.shape[1]))
-    ax2.plot(plot_times, avg_state, color="#0072B2", linewidth=2, label="Average state")
-    
-    fit = _exp_fit(times, sum((s + 1) * pop_history[:, s] for s in range(pop_history.shape[1])), 
-                   tail_fraction=tail_fraction, verbose=False)
-    if fit is not None:
-        a, tau, c = fit
-        ax2.plot(plot_times, c + a * np.exp(-plot_times / tau), color="#E69F00", linestyle="--",
-                linewidth=2, label=f"τ={tau:.1f} μs")
-    
-    ax2.set_ylim(0.5, pop_history.shape[1] + 0.5)
-    ax2.set_xlabel("time (μs)")
-    ax2.set_ylabel("State")
-    ax2.set_yticks([1, 2, 3, 4])
-    ax2.legend(loc="upper right")
-    ax2.set_title("Excitation Decay")
-    ax2.grid(False)
-    # ax2.autoscale_view()
-    
-    plt.tight_layout()
-    
-    # Save figure if path provided
-    if save_path:
-        os.makedirs(os.path.dirname(save_path), exist_ok=True)
-        fig.savefig(save_path, dpi=150, bbox_inches='tight', facecolor='white')
-        print(f"Plot saved to: {save_path}")
-    
-    # For Agg backend, display in notebook via IPython
-    # display(fig)
-    # plt.close(fig)  # Close to free memory
-    
-    return fig
-
 def run_markov_experiment(markov_fn=None, module_path=None, function_name=None,
                           initial_state=1, steps=1000, n_trajectories=10000, 
                           dt=0.1, keep_traj=100, state_count=4,
                           lambda_val=None, fit_state=1, tail_fraction=0.25, name="",
-                          n_samples=N_SAMPLES_DEFAULT, transition_matrix=None, save_path=None):
+                          n_samples=N_SAMPLES_DEFAULT, transition_matrix=None, save_path=None,
+                          compare_to_analytical_kraus=None,analytical_pts=500,
+                          # Placeholder CHANGEME
+                        analytical_init_state=np.array([[0.5, 0. , 0. , 0.5],
+            [0. , 0. , 0. , 0. ],
+            [0. , 0. , 0. , 0. ],
+            [0.5, 0. , 0. , 0.5]]),
+                        analytical_symbols={sp.Symbol('λ'): 0.01}):
     """
     Run a complete Markov Monte Carlo experiment with timing and plotting.
     
@@ -595,9 +502,11 @@ def run_markov_experiment(markov_fn=None, module_path=None, function_name=None,
     - transition_matrix: Optional precomputed transition matrix. If provided, skips
                         sampling estimation (use for analytical matrices for exact results).
     - save_path: If provided, saves the plot to this path (e.g., "plots/my_plot.png")
-    """
+    - compare_to_analytical_kraus: Set to kraus ops, compares simulation results to analytical solution (if available)"""
     start_time = time.time()
     
+    if n_samples is None:
+        n_samples = 500000
     kept_trajs, pop_history = simulate_markov(
         markov_fn=markov_fn,
         initial_state=initial_state,
@@ -613,6 +522,8 @@ def run_markov_experiment(markov_fn=None, module_path=None, function_name=None,
     )
     elapsed = time.time() - start_time
     
+
+    from .visualizer import plot_markov_results
     plot_markov_results(kept_trajs, pop_history, dt=dt, fit_state=fit_state, 
                        tail_fraction=tail_fraction, name=name, save_path=save_path)
     
@@ -623,6 +534,28 @@ def run_markov_experiment(markov_fn=None, module_path=None, function_name=None,
     tail_start = int(0.8 * pop_history.shape[0])
     asymptotic_pops = np.mean(pop_history[tail_start:], axis=0)
     print(f"Asymptotic populations: {asymptotic_pops}")
+    
+    # Use density operator for analytical comparison
+    if compare_to_analytical_kraus is not None:
+        from .derivation import density_operator_simulator
+        analytical_results = density_operator_simulator(compare_to_analytical_kraus,  steps=analytical_pts, initial_state=analytical_init_state, symbols_values=analytical_symbols)
+        analytical_pops = []
+        # get populations
+        for dm in analytical_results:
+            pops = [float(dm[i, i]) for i in range(state_count)]
+            analytical_pops.append(pops)
+        # Plot populations alongside mk sim
+        # add 'analytical_comparison' to name
+        # expect there to be .png at end
+        from .visualizer import plot_mk_analytic_comparison
+
+        save_path_analytical = None
+        if save_path:
+            assert save_path.endswith('.png'), "save_path must end with .png"
+            save_path_analytical = save_path[:-4] + '_analytical_comparison.png'
+        analytical_pops = np.array(analytical_pops)
+        plot_mk_analytic_comparison(analytical_pops, pop_history, dt, name=name, save_path=save_path_analytical if save_path else None)
+        
     
     return kept_trajs, pop_history, asymptotic_pops
 

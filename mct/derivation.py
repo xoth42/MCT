@@ -2,7 +2,7 @@ import numpy as np
 # import pandas as pd
 import sympy as sp
 from itertools import product
-
+# from main import transition_matrix_from_sympy
 
 def density_matrix(state_vector):
     return np.dot(state_vector, state_vector.conj().T)
@@ -146,3 +146,35 @@ def to_bell_basis(ρ_comp):
         return Bell_transformation.conj().T * ρ_comp * Bell_transformation
     else:
         raise ValueError("ρ_comp must be a numpy array or sympy Matrix")
+    
+def density_operator_simulator(kraus_ops, initial_state, symbols_values, steps = 100):
+    # Substitute symbols in Kraus ops
+    substituted_ops = [op.subs(symbols_values) for op in kraus_ops]
+
+    # Determine system size
+    dim = initial_state.shape[0]
+    n_qubits = int(np.log2(dim))
+    # If ops are 2x2, expand to n-qubit via tensor product
+    if substituted_ops[0].shape == (2, 2) and n_qubits > 1:
+        # Build all tensor products for n qubits
+        from itertools import product
+        single_qubit_ops = substituted_ops
+        substituted_ops = []
+        for idxs in product(range(len(single_qubit_ops)), repeat=n_qubits):
+            op = single_qubit_ops[idxs[0]]
+            for i in idxs[1:]:
+                op = sp.Matrix(np.kron(np.array(op).astype(np.complex128), np.array(single_qubit_ops[i]).astype(np.complex128)))
+            substituted_ops.append(op)
+
+    def step(ρ):
+        ρ_next = sp.zeros(ρ.shape[0], ρ.shape[1])
+        for K in substituted_ops:
+            ρ_next += K @ ρ @ K.H
+        return ρ_next
+
+    ρ = initial_state
+    history = [ρ]
+    for _ in range(steps):
+        ρ = step(ρ)
+        history.append(ρ)
+    return history
