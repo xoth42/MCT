@@ -108,9 +108,14 @@ def transition_matrix_from_sympy(density_matrices_list, lambda_val, state_count=
     # Normalize lambda_val to a dict
     if isinstance(lambda_val, dict):
         lambda_dict = lambda_val
+        # Check if keys are SymPy symbols or strings
+        first_key = next(iter(lambda_dict.keys()))
+        from sympy import Symbol
+        keys_are_symbols = isinstance(first_key, Symbol)
     else:
         # Single value - will substitute all free symbols
         lambda_dict = None
+        keys_are_symbols = False
         single_val = lambda_val
     
     trans_matrix = np.zeros((state_count, state_count), dtype=np.float64)
@@ -122,11 +127,16 @@ def transition_matrix_from_sympy(density_matrices_list, lambda_val, state_count=
             
             # Substitute symbols
             if lambda_dict is not None:
-                # Dict of symbol name -> value
-                for sym in elem.free_symbols:
-                    sym_name = str(sym)
-                    if sym_name in lambda_dict:
-                        elem = elem.subs(sym, lambda_dict[sym_name])
+                if keys_are_symbols:
+                    # Dict with SymPy symbol keys: {p_x: value, p_y: value}
+                    for sym, val in lambda_dict.items():
+                        elem = elem.subs(sym, val)
+                else:
+                    # Dict with string keys: {'lambda_1': value, 'lambda_2': value}
+                    for sym in elem.free_symbols:
+                        sym_name = str(sym)
+                        if sym_name in lambda_dict:
+                            elem = elem.subs(sym, lambda_dict[sym_name])
             else:
                 # Single value - substitute all free symbols
                 for sym in elem.free_symbols:
